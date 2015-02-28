@@ -1,9 +1,12 @@
 /*-------------------- MODULES --------------------*/
 var		express = require('express'),
 	 bodyParser = require('body-parser')
-	MongoClient = require('mongodb').MongoClient;
-var app = express();
+	MongoClient = require('mongodb').MongoClient,
+			 jf = require('jsonfile'),
+			  _ = require('underscore');
 
+var app = express();
+ 
 
 /*-------------------- SETUP --------------------*/
 var app = express();
@@ -30,6 +33,24 @@ app.use('/', express.static(__dirname + '/public'));
 
 
 /*------------------- ROUTERS -------------------*/
+app.post('/start', function(request, response) {
+	// console.log(request.body);
+	var loadedCountries = jf.readFileSync('data/countries_domains_languages.json');
+	loadedCountries = _.filter(loadedCountries, function(obj){
+		return obj.language_a_script == 'latin';
+	});
+	// console.log(loadedCountries);
+	var loadedServices = jf.readFileSync('data/services.json');
+	response.json({
+		countries: loadedCountries,
+		services: loadedServices
+	});
+});
+
+function loadDomains(){
+	console.log('Called loadDomains.');
+}
+
 // Create a project
 app.post('/search', function(request, response) {
     console.log(request.body);

@@ -5,9 +5,40 @@ var app = {};
 app.init = function() {
 	console.log('Your code starts here!');
 
+	loadGuiData();
+
 	attachEvents();
 
 	/*------------------ FUNCTIONS ------------------*/	
+
+	function loadGuiData(){
+        $.post('/start', {}, function(response) {
+            // console.log(response);
+            if(response.error) throw response.error
+         	// console.log(response.services);
+        	// console.log(response.countries);
+			var letters = [];
+			for(var i = 65; i <= 90; i++){
+				letters.push(String.fromCharCode(i));
+			}
+			generateGui('letters', letters);        	
+        });		
+	}
+
+	function generateGui(name, options){
+		
+		options.forEach(function(item){
+			// console.log(item);
+      		var div = $('<div class="regular-checkbox"></div>');
+			var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
+			var label = $('<label for="'+item+'"></label>');
+			var span = $('<span>'+item+'</span>')
+			$(div).append(checkbox).append(label).append(span);
+			$('#search-div').append(div);
+		});
+		
+	}
+
 	// A function where we keep all user's interaction listener (buttons, etc)
 	function attachEvents() {
 	    console.log('Attaching Events');

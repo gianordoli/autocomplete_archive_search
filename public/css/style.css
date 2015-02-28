@@ -1,45 +1,6 @@
 /* your style begins here */
 body{
-	font-family: Georgia;
-	font-size: 13px;
-	font-weight: normal;
-	line-height: 16px;
-}
 
-h2{
-	font-family: Arial;
-	font-weight: bold;
-	font-size: 14px;
-	line-height: 16px;
-	border-bottom: 1px solid black;
-	padding-bottom: 8px;
-	text-transform: uppercase;
-}
-
-ul{
-	padding: 0 0 0 10px;
-	list-style: none;
-	text-indent: -10px;
-}
-
-input,
-button{
-	border: 1px solid black;
-	background-color: white;
-	outline: none;	
-	font-family: Arial;
-	font-weight: normal;
-	font-size: 13px;
-	padding: 4px 6px;
-}
-
-input{
-	background-color: white;
-}
-
-button{
-	background-color: black;
-	color: white;
 }
 
 #search-div{
@@ -50,8 +11,80 @@ button{
 	width: 136px;
 	height: 100%;
 	text-align: left;
+
+	font-family: Arial;
+	font-weight: normal;	
+	font-size: 13px;
+	font-weight: normal;
+	line-height: 16px;		
 }
 
+#search-div input,
+#search-div button{
+	border: 1px solid black;
+	background-color: white;
+	outline: none;	
+	padding: 4px 6px;
+}
+
+#search-div input{
+	background-color: white;
+}
+
+#search-div button{
+	background-color: black;
+	color: white;
+}
+
+#search-div input[type=checkbox] {
+	visibility: hidden;
+}
+
+#search-div .regular-checkbox {
+	position: relative;
+	margin: 6px 0;
+}
+
+#search-div .regular-checkbox span{
+	position: relative;
+	left: 8px;
+}
+
+#search-div .regular-checkbox label {
+	cursor: pointer;
+	position: absolute;
+	width: 13px;
+	height: 13px;
+	top: 0;
+  	left: 0;
+	background: white;
+	border:1px solid black;
+}
+
+#search-div .regular-checkbox input[type=checkbox]:checked + label:after {
+	/*opacity: 0.2;*/
+	content: '';
+	position: absolute;
+	width: 9px;
+	height: 5px;
+	background: transparent;
+	top: 5px;
+	left: 6px;
+	border: 3px solid #333;
+	border-top: none;
+	border-right: none;
+
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+
+
+
+
+/*----- RESULTS -----*/
 #container{
 	position: absolute;
 	left: 136px;
@@ -59,9 +92,30 @@ button{
 }
 
 .results{
+	font-family: Georgia;
+	font-size: 13px;
+	font-weight: normal;
+	line-height: 16px;
+
 	display: inline-block;
 	width: 136px;
 	margin-right: 10px;
 	/*float: left;*/
 	vertical-align: top;
+}
+
+.results ul{
+	padding: 0 0 0 10px;
+	list-style: none;
+	text-indent: -10px;
+}
+
+.results h2{
+	font-family: Arial;
+	font-weight: bold;
+	font-size: 14px;
+	line-height: 16px;
+	border-bottom: 1px solid black;
+	padding-bottom: 8px;
+	text-transform: uppercase;
 }
