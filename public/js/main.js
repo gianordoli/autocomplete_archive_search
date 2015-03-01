@@ -14,45 +14,73 @@ app.init = function() {
 	function loadGuiData(){
         $.post('/start', {}, function(response) {
             // console.log(response);
-            if(response.error) throw response.error
-         	
-        	
-			var letters = [];
-			for(var i = 65; i <= 90; i++){
-				letters.push(String.fromCharCode(i));
-			}
-			// generateGui('letters', letters);
+            if(response.error){
+            	throw response.error	
+            }else{
 
-			// console.log(response.services);
-			var services = [];
-			response.services.forEach(function(item){
-				services.push(item.site);
-			});
-			// console.log(services);
-			generateGui('services', services);
+				var letters = [];
+				for(var i = 65; i <= 90; i++){
+					letters.push(String.fromCharCode(i));
+				}
+				generateGui('letters', letters);
 
-			// console.log(response.countries);
-			var countries = [];
-			response.countries.forEach(function(item){
-				countries.push(item.country_name);
-			});
-			// console.log(services);
-			generateGui('countries', countries);			
-			// generateGui('domains', response.domains);
+				// console.log(response.services);
+				var services = [];
+				response.services.forEach(function(item){
+					services.push(item.site);
+				});
+				// console.log(services);
+				generateGui('services', services);
+
+				// console.log(response.countries);
+				var countries = [];
+				response.countries.forEach(function(item){
+					countries.push(item.country_name);
+				});
+				// console.log(services);
+				generateGui('countries', countries);			
+				// generateGui('domains', response.domains);
+
+            }
         });		
 	}
 
 	function generateGui(name, options){
+		
 		var searchOptions = $('<div class="search-options"></div>');
-		options.forEach(function(item){
-			// console.log(item);
-      		var div = $('<div class="checkbox-container"></div>');
-			var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
-			var label = $('<label for="'+item+'"></label>');
-			var span = $('<span>'+item+'</span>')
-			$(div).append(checkbox).append(label).append(span);
-			$(searchOptions).append(div);
-		});
+		var title = $('<h2>'+name+'</h2>')
+		$(searchOptions).append(title);
+
+		if(name != 'letters'){
+			options.forEach(function(item){
+				// console.log(item);
+	      		var div = $('<div class="checkbox-container"></div>');
+				var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
+				var label = $('<label for="'+item+'"></label>');
+				var span = $('<span>'+item+'</span>');
+				$(div).append(checkbox).append(label).append(span);
+				$(searchOptions).append(div);
+			});
+
+		}else{
+			var column;
+
+			options.forEach(function(item, index){
+				// console.log(item);
+	      		var div = $('<div class="checkbox-container"></div>');
+				var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
+				var label = $('<label for="'+item+'"></label>');
+				var span = $('<span>'+item+'</span>');
+				$(div).append(checkbox).append(label).append(span);
+				if(index % 9 == 0){
+					column = $('<div class="column"></div>');
+					$(searchOptions).append(column);
+				}
+				$(column).append(div);				
+			});
+
+		}
+
 		$('#search-div').append(searchOptions);
 	}
 

@@ -8,7 +8,7 @@ body{
 	left: 0;
 	top: 0;
 	padding: 10px;
-	width: 180px;
+	width: 200px;
 	height: 100%;
 	text-align: left;
 	overflow: scroll;
@@ -35,8 +35,19 @@ body{
 	background-color: black;
 	color: white;
 }
-#search-div .search-options{
+
+#search-div .search-options h2{
+	font-size: 14px;
+	line-height: 16px;
 	border-bottom: 1px solid black;
+	padding-bottom: 8px;
+	text-transform: uppercase;	
+}
+
+#search-div .search-options .column{
+	width: 33%;
+	display: inline-block;
+	vertical-align: top;
 }
 
 #search-div .search-options input[type=checkbox] {
@@ -68,7 +79,6 @@ body{
 }
 
 #search-div .search-options .checkbox-container input[type=checkbox]:checked + label:after {
-	/*opacity: 0.2;*/
 	content: '';
 	position: absolute;
 	width: 7px;
@@ -76,7 +86,7 @@ body{
 	background: transparent;
 	top: 3px;
 	left: 2px;
-	border: 2px solid #333;
+	border: 2px solid black;
 	border-top: none;
 	border-right: none;
 
