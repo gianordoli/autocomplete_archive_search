@@ -9,7 +9,7 @@ body{
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 5%;
+	height: 40px;
 	background: white;
 	border-bottom: 1px solid black;
 	z-index: 100;
@@ -30,6 +30,7 @@ body{
   position: relative;
   cursor: pointer;
 }
+
 #top-bar #hamburger:after, #top-bar #hamburger:before {
   content: "";
   width: 24px;
@@ -53,10 +54,10 @@ body{
 #search-div{
 	position: fixed;
 	left: 0;
-	top: 5%;
+	top: 40px;
 	padding: 10px;
 	width: 200px;
-	height: 95%;
+	height: calc(100% - 40px);
 	text-align: left;
 	overflow: scroll;
 	font-family: Arial;

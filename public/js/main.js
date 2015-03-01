@@ -11,6 +11,7 @@ app.init = function() {
 
 	/*------------------ FUNCTIONS ------------------*/	
 
+	// Loading the list of domais/countries and services from the server
 	function loadGuiData(){
         $.post('/start', {}, function(response) {
             // console.log(response);
@@ -45,12 +46,14 @@ app.init = function() {
         });		
 	}
 
+	// Generating the menu based on the data loaded from the server
 	function generateGui(name, options){
 		
 		var searchOptions = $('<div class="search-options"></div>');
 		var title = $('<h2>'+name+'</h2>')
 		$(searchOptions).append(title);
 
+		// Countries and Services
 		if(name != 'letters'){
 			options.forEach(function(item){
 				// console.log(item);
@@ -62,6 +65,7 @@ app.init = function() {
 				$(searchOptions).append(div);
 			});
 
+		// Letters
 		}else{
 			var column;
 
@@ -95,12 +99,15 @@ app.init = function() {
 	    // .off() is the same as removeEventListener
 	    // it is needed to cancel out any duplications
 	    $('#search-bt').off('click').on('click', function() {
+
 	        moveMenu();
-	        callLoader();	    	
-	    	var query = $('#search-box').val().toLowerCase();
+	        callLoader();
+
 	        // Ajax call
 	        $.post('/search', {
-	            letter: query
+	            letters: getSelected('letters'),
+	            services: getSelected('services'),
+	            countries: getSelected('countries')
 	        }, function(response) {
 	            // console.log(response);
 	            if(response.error) throw response.error
@@ -110,6 +117,17 @@ app.init = function() {
 	    });	
 	}
 
+	// Get the selected checkboxes
+	function getSelected(checkBoxName){
+        var selected = [];
+        $('input[name='+checkBoxName+']:checked')
+			.each(function(index, obj){
+	        	selected.push($(obj).val());
+	        });
+        return selected;
+	}
+
+	// Show/hide sidebar
 	function moveMenu(){
 		if($('#search-div').offset().left < 0){
 			$('#search-div').animate({left: 0}, 500);	
@@ -118,12 +136,14 @@ app.init = function() {
 		}
 	}
 
+	// Show loading
 	function callLoader(){
 		$('#results-container').empty();
 		var loader = $('<span class="loader"></span>');
 		$('#results-container').append(loader);
 	}
 
+	// Show search results
 	function printResults(data){
 		console.log('Called printResults.')
 		console.log(data);
@@ -148,6 +168,7 @@ app.init = function() {
 		}
 	}
 
+	// Formats UTC date to MM/DD/YYYY
 	function formatDate(date){
 		var newDate = new Date(date);
 		var monthString = newDate.getMonth() + 1;

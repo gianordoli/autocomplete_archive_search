@@ -53,15 +53,16 @@ function loadDomains(){
 
 // Create a project
 app.post('/search', function(request, response) {
+	console.log('Route: /search');
     console.log(request.body);
-    searchMongoDB(request.body.letter, function(results){
-    	console.log('Called callback.');
-    	// console.log(results);
-	    response.json({
-	    	error: null,
-	        data: results
-	    });    	
-    });
+    // searchMongoDB(request.body.letter, function(results){
+    // 	console.log('Called callback.');
+    // 	// console.log(results);
+	   //  response.json({
+	   //  	error: null,
+	   //      data: results
+	   //  });    	
+    // });
 });
 
 
