@@ -55,9 +55,14 @@ function loadDomains(){
 app.post('/search', function(request, response) {
 	console.log('Route: /search');
     console.log(request.body);
-    // searchMongoDB(request.body.letter, function(results){
+    console.log(request.body['letters[]']);
+    console.log(request.body['services[]']);
+    console.log(request.body['countries[]']);
+
+    // console.log(request.body.letters);
+    // searchMongoDB(request.body, function(results){
     // 	console.log('Called callback.');
-    // 	// console.log(results);
+    // 	console.log(results);
 	   //  response.json({
 	   //  	error: null,
 	   //      data: results
@@ -67,8 +72,9 @@ app.post('/search', function(request, response) {
 
 
 /*------------------ FUNCTIONS ------------------*/
-function searchMongoDB(letter, callback){
+function searchMongoDB(query, callback){
 	console.log('Called searchMongoDB.')
+	console.log(query);
 
 	MongoClient.connect('mongodb://127.0.0.1:27017/autocomplete', function(err, db) {
 		console.log('Connecting to DB...');
@@ -77,7 +83,7 @@ function searchMongoDB(letter, callback){
 		var collection = db.collection('records');
 
 		// Locate all the entries using find 
-		collection.find({'letter':letter}).toArray(function(err, results) {
+		collection.find({'letter':{'$in': query.letters}}).toArray(function(err, results) {
 			// console.dir(results);
 			callback(results);
 			db.close();	// Let's close the db 

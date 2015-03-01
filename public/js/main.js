@@ -112,12 +112,15 @@ app.init = function() {
 	        moveMenu();
 	        callLoader();
 
+	        var data = {
+	            'letters[]': getSelected('letters'),
+	            'services[]': getSelected('services'),
+	            'countries[]': getSelected('countries')
+	        }
+
 	        // Ajax call
-	        $.post('/search', {
-	            letters: getSelected('letters'),
-	            services: getSelected('services'),
-	            countries: getSelected('countries')
-	        }, function(response) {
+	        $.post('/search', data,
+	        function(response) {
 	            // console.log(response);
 	            if(response.error) throw response.error
 	            // console.log(response.data);
