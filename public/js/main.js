@@ -17,30 +17,15 @@ app.init = function() {
             if(response.error){
             	throw response.error	
             }else{
-
+				// console.log(response.services);
+				// console.log(response.countries);
 				var letters = [];
 				for(var i = 65; i <= 90; i++){
 					letters.push(String.fromCharCode(i));
 				}
 				generateGui('letters', letters);
-
-				// console.log(response.services);
-				// var services = [];
-				// response.services.forEach(function(item){
-				// 	services.push(item.site);
-				// });
-				// // console.log(services);
 				generateGui('services', response.services);
-
-				// console.log(response.countries);
-				// var countries = [];
-				// response.countries.forEach(function(item){
-				// 	countries.push(item.country_name);
-				// });
-				// // console.log(services);
-				generateGui('countries', response.countries);			
-				// generateGui('domains', response.domains);
-
+				generateGui('countries', response.countries);
             }
         });		
 	}

@@ -58,6 +58,9 @@ app.post('/search', function(request, response) {
     console.log(request.body['letters[]']);
     console.log(request.body['services[]']);
     console.log(request.body['countries[]']);
+	request.body['letters[]'] = _.map(request.body['letters[]'], function(item){
+		return item.toLowerCase();
+	});
 
     searchMongoDB(request.body, function(results){
     	console.log('Called callback.');
