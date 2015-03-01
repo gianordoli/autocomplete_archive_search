@@ -88,9 +88,15 @@ app.init = function() {
 	function attachEvents() {
 	    console.log('Attaching Events');
 
+		$('#hamburger').off('click').on('click', function() {
+			moveMenu();
+		});
+
 	    // .off() is the same as removeEventListener
 	    // it is needed to cancel out any duplications
 	    $('#search-bt').off('click').on('click', function() {
+	        moveMenu();
+	        callLoader();	    	
 	    	var query = $('#search-box').val().toLowerCase();
 	        // Ajax call
 	        $.post('/search', {
@@ -104,10 +110,23 @@ app.init = function() {
 	    });	
 	}
 
+	function moveMenu(){
+		if($('#search-div').offset().left < 0){
+			$('#search-div').animate({left: 0}, 500);	
+		}else{
+			$('#search-div').animate({left: -$('#search-div').outerWidth()}, 500);			
+		}
+	}
+
+	function callLoader(){
+		var loader = $('<span class="loader"></span>');
+		$('#results-container').append(loader);
+	}
+
 	function printResults(data){
 		console.log('Called printResults.')
 		console.log(data);
-		$('#container').empty();
+		$('#results-container').empty();
 		for(var i = 0; i < data.length; i++){
 			var newDiv = $('<div class="results"></div>');
 
@@ -124,7 +143,7 @@ app.init = function() {
 			$(newDiv).append(letter);
 			$(newDiv).append(description);
 			$(newDiv).append(predictions);
-			$('#container').append(newDiv);
+			$('#results-container').append(newDiv);
 		}
 	}
 
