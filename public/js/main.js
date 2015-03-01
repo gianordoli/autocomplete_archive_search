@@ -153,7 +153,8 @@ app.init = function() {
 			var letter = $('<h2>' + data[i].letter + '</h2>');
 			var description = $('<p>' + formatDate(data[i].date) + '<br>' +
 						  				data[i].domain + '<br>' +
-						  				data[i].language + '<br>' + '</p>');
+						  				data[i].language + '<br>' +
+										data[i].service + '<br>' + '</p>');
 			var predictions = $('<ul></ul>');
 			for(var j = 0; j < data[i].results.length; j++){
 				var prediction = $('<li>' + data[i].results[j] + '</li>');
