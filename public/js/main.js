@@ -119,6 +119,7 @@ app.init = function() {
 	}
 
 	function callLoader(){
+		$('#results-container').empty();
 		var loader = $('<span class="loader"></span>');
 		$('#results-container').append(loader);
 	}

@@ -13,7 +13,42 @@ body{
 	background: white;
 	border-bottom: 1px solid black;
 	z-index: 100;
+	padding: 0 10px;
+
+	font-family: Arial;
+	font-weight: normal;	
+	font-size: 13px;
+	font-weight: normal;
+	line-height: 16px;
 }
+
+#top-bar #hamburger  {
+  width: 24px;
+  height: 15px;
+  background-color: black;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+#top-bar #hamburger:after, #top-bar #hamburger:before {
+  content: "";
+  width: 24px;
+  height: 3px;
+  background-color: #FFF;
+  display: block;
+  position: absolute;
+}
+#top-bar #hamburger:before {
+  top: 3px;
+}
+#top-bar #hamburger:after {
+  bottom: 3px;
+}
+/*#top-bar #hamburger:hover,
+#top-bar #hamburger:hover {
+  background-color: red;
+}	*/
+
 /*----- MENU -----*/
 #search-div{
 	position: fixed;
