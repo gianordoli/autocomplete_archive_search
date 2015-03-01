@@ -3,7 +3,6 @@
 var app = {};
 
 app.init = function() {
-	console.log('Your code starts here!');
 
 	loadGuiData();
 
@@ -26,20 +25,20 @@ app.init = function() {
 				generateGui('letters', letters);
 
 				// console.log(response.services);
-				var services = [];
-				response.services.forEach(function(item){
-					services.push(item.site);
-				});
-				// console.log(services);
-				generateGui('services', services);
+				// var services = [];
+				// response.services.forEach(function(item){
+				// 	services.push(item.site);
+				// });
+				// // console.log(services);
+				generateGui('services', response.services);
 
 				// console.log(response.countries);
-				var countries = [];
-				response.countries.forEach(function(item){
-					countries.push(item.country_name);
-				});
-				// console.log(services);
-				generateGui('countries', countries);			
+				// var countries = [];
+				// response.countries.forEach(function(item){
+				// 	countries.push(item.country_name);
+				// });
+				// // console.log(services);
+				generateGui('countries', response.countries);			
 				// generateGui('domains', response.domains);
 
             }
@@ -57,10 +56,20 @@ app.init = function() {
 		if(name != 'letters'){
 			options.forEach(function(item){
 				// console.log(item);
-	      		var div = $('<div class="checkbox-container"></div>');
-				var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
-				var label = $('<label for="'+item+'"></label>');
-				var span = $('<span>'+item+'</span>');
+				var div, checkbox, label, span;
+	      		
+	      		div = $('<div class="checkbox-container"></div>');
+
+	      		if(name == 'services'){
+	      			checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.site+'" id="'+item.site+'">');	
+					label = $('<label for="'+item.site+'"></label>');
+					span = $('<span>'+item.site+'</span>');	      			
+	      		}else if(name == 'countries'){
+					checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.domain+'" id="'+item.domain+'">');	
+					label = $('<label for="'+item.domain+'"></label>');
+					span = $('<span>'+item.country_name+'</span>');					
+	      		}
+
 				$(div).append(checkbox).append(label).append(span);
 				$(searchOptions).append(div);
 			});
