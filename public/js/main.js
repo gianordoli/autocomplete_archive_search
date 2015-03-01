@@ -93,7 +93,6 @@ app.init = function() {
 	    // .off() is the same as removeEventListener
 	    // it is needed to cancel out any duplications
 	    $('#search-bt').off('click').on('click', function() {
-
 	        moveMenu();
 	        callLoader();
 	        queryDB();
