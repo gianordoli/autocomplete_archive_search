@@ -59,15 +59,14 @@ app.post('/search', function(request, response) {
     console.log(request.body['services[]']);
     console.log(request.body['countries[]']);
 
-    // console.log(request.body.letters);
-    // searchMongoDB(request.body, function(results){
-    // 	console.log('Called callback.');
-    // 	console.log(results);
-	   //  response.json({
-	   //  	error: null,
-	   //      data: results
-	   //  });    	
-    // });
+    searchMongoDB(request.body, function(results){
+    	console.log('Called callback.');
+    	console.log(results);
+	    response.json({
+	    	error: null,
+	        data: results
+	    });    	
+    });
 });
 
 
@@ -83,7 +82,7 @@ function searchMongoDB(query, callback){
 		var collection = db.collection('records');
 
 		// Locate all the entries using find 
-		collection.find({'letter':{'$in': query.letters}}).toArray(function(err, results) {
+		collection.find({'letter':{'$in': query['letters[]']}}).toArray(function(err, results) {
 			// console.dir(results);
 			callback(results);
 			db.close();	// Let's close the db 
