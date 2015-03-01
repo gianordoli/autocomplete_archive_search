@@ -15,28 +15,45 @@ app.init = function() {
         $.post('/start', {}, function(response) {
             // console.log(response);
             if(response.error) throw response.error
-         	// console.log(response.services);
-        	// console.log(response.countries);
+         	
+        	
 			var letters = [];
 			for(var i = 65; i <= 90; i++){
 				letters.push(String.fromCharCode(i));
 			}
-			generateGui('letters', letters);        	
+			// generateGui('letters', letters);
+
+			// console.log(response.services);
+			var services = [];
+			response.services.forEach(function(item){
+				services.push(item.site);
+			});
+			// console.log(services);
+			generateGui('services', services);
+
+			// console.log(response.countries);
+			var countries = [];
+			response.countries.forEach(function(item){
+				countries.push(item.country_name);
+			});
+			// console.log(services);
+			generateGui('countries', countries);			
+			// generateGui('domains', response.domains);
         });		
 	}
 
 	function generateGui(name, options){
-		
+		var searchOptions = $('<div class="search-options"></div>');
 		options.forEach(function(item){
 			// console.log(item);
-      		var div = $('<div class="regular-checkbox"></div>');
+      		var div = $('<div class="checkbox-container"></div>');
 			var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
 			var label = $('<label for="'+item+'"></label>');
 			var span = $('<span>'+item+'</span>')
 			$(div).append(checkbox).append(label).append(span);
-			$('#search-div').append(div);
+			$(searchOptions).append(div);
 		});
-		
+		$('#search-div').append(searchOptions);
 	}
 
 	// A function where we keep all user's interaction listener (buttons, etc)
