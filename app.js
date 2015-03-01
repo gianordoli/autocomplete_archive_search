@@ -55,10 +55,10 @@ function loadDomains(){
 app.post('/search', function(request, response) {
 	console.log('Route: /search');
     console.log(request.body);
-    console.log(request.body['letters[]']);
-    console.log(request.body['services[]']);
-    console.log(request.body['countries[]']);
-	request.body['letters[]'] = _.map(request.body['letters[]'], function(item){
+    console.log(request.body['letter[]']);
+    console.log(request.body['service[]']);
+    console.log(request.body['domain[]']);
+	request.body['letter[]'] = _.map(request.body['letter[]'], function(item){
 		return item.toLowerCase();
 	});
 
@@ -84,14 +84,42 @@ function searchMongoDB(query, callback){
 		console.log('Connected.');
 		var collection = db.collection('records');
 
+		// Define query parameters
+		var params = {};
+		params.getParams = function(paramName, query){
+			// console.log(this);
+			var request = query[paramName+'[]'];
+			console.log(request);
+			if(request != undefined){
+				console.log(Array.isArray(request));
+				if(Array.isArray(request)){ // Array search
+					this[paramName] = {'$in': request};	
+				}else{					// Single param search
+					this[paramName] = request;
+				}
+			}
+			return this;
+		}
+		params.getParams('letter', query)
+			  .getParams('service', query)
+			  .getParams('domain', query);
+		delete params.getParams;
+		console.log(params);
+
 		// Locate all the entries using find 
-		collection.find({'letter':{'$in': query['letters[]']}}).toArray(function(err, results) {
+		collection.find(params).toArray(function(err, results) {
 			// console.dir(results);
 			callback(results);
 			db.close();	// Let's close the db 
 		});		
 
 	});
+}
+
+function getParams(obj, param, query){
+	// console.log(query[param+'s[]']);
+
+	return obj;
 }
 
 

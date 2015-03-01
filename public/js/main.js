@@ -96,22 +96,25 @@ app.init = function() {
 
 	        moveMenu();
 	        callLoader();
-
-	        var data = {
-	            'letters[]': getSelected('letters'),
-	            'services[]': getSelected('services'),
-	            'countries[]': getSelected('countries')
-	        }
-
-	        // Ajax call
-	        $.post('/search', data,
-	        function(response) {
-	            // console.log(response);
-	            if(response.error) throw response.error
-	            // console.log(response.data);
-	            printResults(response.data);
-	        });
+	        queryDB();
 	    });	
+	}
+
+	function queryDB(){
+        var data = {
+            'letter[]': getSelected('letters'),
+            'service[]': getSelected('services'),
+            'domain[]': getSelected('countries')
+        }
+
+        // Ajax call
+        $.post('/search', data,
+        function(response) {
+            // console.log(response);
+            if(response.error) throw response.error
+            // console.log(response.data);
+            printResults(response.data);
+        });
 	}
 
 	// Get the selected checkboxes
