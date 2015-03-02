@@ -34,6 +34,7 @@ app.use('/', express.static(__dirname + '/public'));
 
 /*------------------- ROUTERS -------------------*/
 app.post('/start', function(request, response) {
+
 	// console.log(request.body);
 	var loadedCountries = jf.readFileSync('data/countries_domains_languages.json');
 	loadedCountries = _.filter(loadedCountries, function(obj){

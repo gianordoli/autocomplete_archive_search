@@ -57,9 +57,10 @@ body{
 	top: 40px;
 	padding: 10px;
 	width: 200px;
-	height: calc(100% - 40px);
+	height: calc(100% - 60px);
 	text-align: left;
-	overflow: scroll;
+	overflow-y: scroll;
+	overflow-x: hidden;
 
 	border-right: 1px solid black;
 
@@ -164,8 +165,8 @@ body{
 
 .results{
 	display: inline-block;
-	width: 136px;
-	margin-right: 10px;
+	width: 146px;
+	padding-right: 10px;
 	/*float: left;*/
 	vertical-align: top;
 
@@ -241,4 +242,14 @@ body{
     to {
     	transform: rotate(90deg);
     }
+}
+
+/*---------- RESPONSIVE ----------*/
+@media screen and (max-width: 800px) {
+	#search-div{
+		width: calc(100% - 20px);
+	}
+	.results{
+		width: calc(50% - 10px);
+	}
 }
