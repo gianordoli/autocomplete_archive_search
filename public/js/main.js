@@ -4,6 +4,9 @@ var app = {};
 
 app.init = function() {
 
+	// GLOBALS
+	var countries = [];
+
 	loadGuiData();
 	loadDates();
 	attachEvents();
@@ -26,6 +29,8 @@ app.init = function() {
 				generateGui('letters', letters);
 				generateGui('services', response.services);
 				generateGui('countries', response.countries);
+
+				countries = response.countries;
             }
         });		
 	}
@@ -174,16 +179,21 @@ app.init = function() {
 	// Show search results
 	function printResults(data){
 		console.log('Called printResults.')
-		console.log(data);
+		// console.log(data);
 		$('#results-container').empty();
 		$('#loader-container').remove();
 		for(var i = 0; i < data.length; i++){
 			var newDiv = $('<div class="results"></div>');
 
 			var letter = $('<h2>' + data[i].letter + '</h2>');
-			var description = $('<p>' + formatDateMMDDYYY(data[i].date) + '<br>' +
-						  				data[i].domain + '<br>' +
-						  				data[i].language + '<br>' +
+			var country = _.find(countries, function(obj){
+				return obj['domain'] == data[i].domain;
+			});
+			country = country['country_name'];
+			// console.log(country);
+			var details = $('<p class="details">' + formatDateMMDDYYY(data[i].date) + '<br>' +
+						  				country + '<br>' +
+						  				// data[i].language + '<br>' +
 										data[i].service + '<br>' + '</p>');
 			var predictions = $('<ul></ul>');
 			for(var j = 0; j < data[i].results.length; j++){
@@ -191,9 +201,7 @@ app.init = function() {
 				predictions.append(prediction);
 			}
 
-			$(newDiv).append(letter);
-			$(newDiv).append(description);
-			$(newDiv).append(predictions);
+			$(newDiv).append(letter).append(predictions).append(details);
 			$('#results-container').append(newDiv);
 		}
 	}
