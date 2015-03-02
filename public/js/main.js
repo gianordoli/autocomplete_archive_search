@@ -30,7 +30,7 @@ app.init = function() {
 				generateGui('services', response.services);
 				generateGui('countries', response.countries);
 
-				countries = response.countries;
+				countries = response.countries;	// store this one as global
             }
         });		
 	}
@@ -42,7 +42,7 @@ app.init = function() {
             if(response.error){
             	throw response.error	
             }else{
-				console.log(response.dateRange);
+				console.log('dates:' + response.dateRange);
 				generateGui('dates', response.dateRange);
             }
         });		
@@ -88,6 +88,7 @@ app.init = function() {
 				$(input).val(formatDateYYYYMMDD(item));
 				$(div).append(span).append(input);
 				$(searchOptions).append(div);
+				console.log('Parsed date: ' + formatDateYYYYMMDD(item));
 			});
 			
 
@@ -132,12 +133,19 @@ app.init = function() {
 	}
 
 	function queryDB(){
+		var from = convertToServerTimeZone($('input[type=date][name=from]').val());
+		var to = convertToServerTimeZone($('input[type=date][name=to]').val());
+		console.log('from: ' + from);
+		console.log('to: ' + to);
+		// min = new Date(from);
+		// console.log('from: ' + from);
+
         var data = {
             'letter[]': getSelected('letters'),
             'service[]': getSelected('services'),
-            'domain[]': getSelected('countries')
+            'domain[]': getSelected('countries'),
+            'date[]': [from, to]
         }
-
         // Ajax call
         $.post('/search', data,
         function(response) {
@@ -224,7 +232,21 @@ app.init = function() {
 		var dateString = newDate.getDate();
 		var yearString = newDate.getFullYear();
 		return yearString + '-' + monthString + '-' + dateString;
-	}	
+	}
+
+	function convertToServerTimeZone(date){
+	    //EST
+	    var localToUtcOffsetMin = new Date().getTimezoneOffset();
+	    var localToUtcOffsetMillis = localToUtcOffsetMin * 60000;
+	    var clientDateMillis = Date.parse(new Date(date));
+	    var serverDateMillis = clientDateMillis + localToUtcOffsetMillis;
+	    return serverDateMillis;
+	    // offset = -5.0
+	    // clientDate = new Date(date);
+	    // utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
+	    // serverDate = new Date(utc + (3600000*offset));
+	    // console.log(serverDate.toLocaleString());
+	}
 
 	// Capitalize first letter of any String
 	String.prototype.capitalizeFirstLetter = function() {

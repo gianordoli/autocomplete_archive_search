@@ -6,7 +6,7 @@ var		express = require('express'),
 			  _ = require('underscore');
 
 var app = express();
- 
+
 
 /*-------------------- SETUP --------------------*/
 var app = express();
@@ -66,9 +66,21 @@ app.post('/search', function(request, response) {
     console.log(request.body['letter[]']);
     console.log(request.body['service[]']);
     console.log(request.body['domain[]']);
+    console.log(request.body['date[]']);
+	// console.log(new Date(parseInt(request.body['date[]'][0])).toUTCString());
+
+    // Change letters to lowercase
 	request.body['letter[]'] = _.map(request.body['letter[]'], function(item){
 		return item.toLowerCase();
 	});
+	
+    // Parse dates as isoDate
+	request.body['date[]'] = _.map(request.body['date[]'], function(item){
+		var date = new Date(parseInt(item));
+		var isoDate = date.toISOString();
+		return isoDate;
+	});	
+	console.log(request.body['date[]']);
 
     searchMongoDB(request.body, function(results){
     	console.log('Called callback.');
@@ -102,6 +114,10 @@ function getDateRangeDB(callback){
 			});
 			console.log('min: ' + min);
 			console.log('max: ' + max);
+			min = Date.parse(min);
+			max = Date.parse(max);
+			console.log('min: ' + min);
+			console.log('max: ' + max);
 			callback([min, max]);
 			db.close();	// Let's close the db 
 		});			
@@ -123,20 +139,29 @@ function searchMongoDB(query, callback){
 		params.getParams = function(paramName, query){
 			// console.log(this);
 			var request = query[paramName+'[]'];
-			console.log(request);
+			// console.log(request);
 			if(request != undefined){
-				console.log(Array.isArray(request));
-				if(Array.isArray(request)){ // Array search
-					this[paramName] = {'$in': request};	
-				}else{					// Single param search
-					this[paramName] = request;
+				// console.log(Array.isArray(request));
+
+				// letter, service, domain
+				if(paramName != 'date'){
+					if(Array.isArray(request)){ // Array search
+						this[paramName] = {'$in': request};	
+					}else{						// Single param search
+						this[paramName] = request;
+					}
+
+				// date
+				}else{
+					this[paramName] = {'$gte': new Date(request[0]), '$lte': new Date(request[1])};
 				}
 			}
 			return this;
 		}
 		params.getParams('letter', query)
 			  .getParams('service', query)
-			  .getParams('domain', query);
+			  .getParams('domain', query)
+			  .getParams('date', query);
 		delete params.getParams;
 		console.log(params);
 
