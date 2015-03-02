@@ -9,7 +9,6 @@ app.init = function() {
 
 	loadGuiData();
 	loadDates();
-	attachEvents();
 
 	/*------------------ FUNCTIONS ------------------*/	
 
@@ -43,38 +42,65 @@ app.init = function() {
             	throw response.error	
             }else{
 				console.log('dates:' + response.dateRange);
-				generateGui('dates', response.dateRange);
+				generateGui('dates', response.dateRange, attachEvents);
             }
         });		
 	}	
 
 	// Generating the menu based on the data loaded from the server
-	function generateGui(name, options){
+	function generateGui(name, options, callback){
 		
 		var searchOptions = $('<div class="search-options"></div>');
-		var title = $('<h2>'+name+'</h2>')
+		var title = $('<h2>'+name+'</h2>');
 		$(searchOptions).append(title);
 
-		// Letters
-		if(name == 'letters'){
-			var column;
-			options.forEach(function(item, index){
-				// console.log(item);
-				var div, checkbox, label, span;
-	      		div = $('<div class="checkbox-container"></div>');
-				checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
-				label = $('<label for="'+item+'"></label>');
-				span = $('<span>'+item+'</span>');
-				$(div).append(checkbox).append(label).append(span);
-				if(index % 9 == 0){
-					column = $('<div class="column"></div>');
-					$(searchOptions).append(column);
-				}
-				$(column).append(div);				
-			});
+		if(name != 'dates'){
+
+			// Select All / Clear buttons
+			var btAll = $('<button class="selection-buttons" name="select">Select all</button>');
+			var btNone = $('<button class="selection-buttons" name="clear">Clear</button>');
+			$(searchOptions).append(btAll).append(btNone).append($('<br/>'));
+
+			// Letters
+			if(name == 'letters'){
+				var column;
+				options.forEach(function(item, index){
+					// console.log(item);
+					var div, checkbox, label, span;
+		      		div = $('<div class="checkbox-container"></div>');
+					checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
+					label = $('<label for="'+item+'"></label>');
+					span = $('<span>'+item+'</span>');
+					$(div).append(checkbox).append(label).append(span);
+					if(index % 9 == 0){
+						column = $('<div class="column"></div>');
+						$(searchOptions).append(column);
+					}
+					$(column).append(div);				
+				});
+
+			// Countries and Services
+			}else{
+				options.forEach(function(item){
+					// console.log(item);
+					var div, checkbox, label, span;
+		      		div = $('<div class="checkbox-container"></div>');
+		      		if(name == 'services'){
+		      			checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.site+'" id="'+item.site+'">');	
+						label = $('<label for="'+item.site+'"></label>');
+						span = $('<span>'+item.site+'</span>');	      			
+		      		}else if(name == 'countries'){
+						checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.domain+'" id="'+item.domain+'">');	
+						label = $('<label for="'+item.domain+'"></label>');
+						span = $('<span>'+item.country_name+'</span>');					
+		      		}
+					$(div).append(checkbox).append(label).append(span);
+					$(searchOptions).append(div);
+				});			
+			}
 
 		// Calendar
-		}else if(name == 'dates'){
+		}else{
 			options.forEach(function(item, index, list){
 				var div, span, input, inputName, inputValue;
 				if(index == 0){
@@ -90,46 +116,40 @@ app.init = function() {
 				$(searchOptions).append(div);
 				console.log('Parsed date: ' + formatDateYYYYMMDD(item));
 			});
-			
-
-		// Countries and Services
-		}else{
-			options.forEach(function(item){
-				// console.log(item);
-				var div, checkbox, label, span;
-	      		div = $('<div class="checkbox-container"></div>');
-	      		if(name == 'services'){
-	      			checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.site+'" id="'+item.site+'">');	
-					label = $('<label for="'+item.site+'"></label>');
-					span = $('<span>'+item.site+'</span>');	      			
-	      		}else if(name == 'countries'){
-					checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.domain+'" id="'+item.domain+'">');	
-					label = $('<label for="'+item.domain+'"></label>');
-					span = $('<span>'+item.country_name+'</span>');					
-	      		}
-				$(div).append(checkbox).append(label).append(span);
-				$(searchOptions).append(div);
-			});			
 		}
-
+		// Append div to caontainer
 		$('#search-div').append(searchOptions);
+
+		// Dates is the last; It will call the attachEvents() function
+		if(callback != undefined){
+			callback();			
+		}
 	}
 
 	// A function where we keep all user's interaction listener (buttons, etc)
 	function attachEvents() {
 	    console.log('Attaching Events');
 
+	    // .off() is the same as removeEventListener
+	    // it is needed to cancel out any duplications
 		$('#hamburger').off('click').on('click', function() {
 			moveMenu();
 		});
 
-	    // .off() is the same as removeEventListener
-	    // it is needed to cancel out any duplications
 	    $('#search-bt').off('click').on('click', function() {
 	        moveMenu();
 	        callLoader();
 	        queryDB();
 	    });	
+
+		$('.selection-buttons').off('click').on('click', function() {
+			var inputs = $(this).parent().find('input');
+			if($(this).attr('name') == 'select'){
+				$(inputs).prop('checked', true);
+			}else{
+				$(inputs).prop('checked', false);
+			}
+		});
 	}
 
 	function queryDB(){

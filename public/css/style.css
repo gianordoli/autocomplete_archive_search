@@ -154,7 +154,12 @@ body{
 	margin: 6px 0;
 }
 
-
+#search-div .search-options .selection-buttons{
+	background: white;
+	border: 1px solid black;
+	color: black;
+	margin-right: 5px;
+}
 
 
 /*----- RESULTS -----*/
