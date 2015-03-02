@@ -60,6 +60,9 @@ body{
 	height: calc(100% - 40px);
 	text-align: left;
 	overflow: scroll;
+
+	border-right: 1px solid black;
+
 	font-family: Arial;
 	font-weight: normal;	
 	font-size: 13px;
@@ -106,7 +109,6 @@ body{
 #search-div .search-options .checkbox-container {
 	position: relative;
 	margin: 6px 0;
-
 	text-indent: -12px;
 	padding-left: 12px;
 }
@@ -146,13 +148,18 @@ body{
 	transform: rotate(-45deg);
 }
 
+#search-div .search-options .date-container {
+	position: relative;
+	margin: 6px 0;
+}
+
 
 
 
 /*----- RESULTS -----*/
 #results-container{
-	padding: 5% 20px;
-	text-align: center;
+	padding: 40px 20px;
+	/*text-align: center;*/
 }
 
 .results{
@@ -186,7 +193,17 @@ body{
 }
 
 /*----- LOADER -----*/
-.loader {
+#loader-container{
+	text-align: center;
+	top: 50%;
+	width: 100%;
+	position: absolute;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);	
+}
+
+#loader-container .loader {
 	width: 20px;
 	height: 20px;
 	border: 3px solid black;

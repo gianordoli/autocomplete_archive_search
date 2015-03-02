@@ -41,15 +41,23 @@ app.post('/start', function(request, response) {
 	});
 	// console.log(loadedCountries);
 	var loadedServices = jf.readFileSync('data/services.json');
+	
 	response.json({
 		countries: loadedCountries,
 		services: loadedServices
 	});
 });
 
-function loadDomains(){
-	console.log('Called loadDomains.');
-}
+app.post('/date', function(request, response) {
+	getDateRangeDB(function(range){
+		// console.log('Called callback.');
+		// console.log(range);
+		response.json({
+			error: null,
+			dateRange: range
+		});		
+	});
+});
 
 // Create a project
 app.post('/search', function(request, response) {
@@ -74,6 +82,32 @@ app.post('/search', function(request, response) {
 
 
 /*------------------ FUNCTIONS ------------------*/
+
+function getDateRangeDB(callback){
+	console.log('Called searchMongoDB.')
+
+	MongoClient.connect('mongodb://127.0.0.1:27017/autocomplete', function(err, db) {
+		console.log('Connecting to DB...');
+		if(err) throw err;
+		console.log('Connected.');
+		var collection = db.collection('records');
+
+		var min = (new Date()).getTime();
+		var max = 0;
+		collection.find({}).toArray(function(err, results) {
+			// console.dir(results);
+			results.forEach(function(item, index, array){
+				if(item.date.getTime() > max) max = item.date;
+				if(item.date.getTime() < min) min = item.date;
+			});
+			console.log('min: ' + min);
+			console.log('max: ' + max);
+			callback([min, max]);
+			db.close();	// Let's close the db 
+		});			
+	});	
+}
+
 function searchMongoDB(query, callback){
 	console.log('Called searchMongoDB.')
 	console.log(query);

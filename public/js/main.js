@@ -5,7 +5,7 @@ var app = {};
 app.init = function() {
 
 	loadGuiData();
-
+	loadDates();
 	attachEvents();
 
 	/*------------------ FUNCTIONS ------------------*/	
@@ -30,6 +30,19 @@ app.init = function() {
         });		
 	}
 
+	// Loading the dates to build the calendar
+	function loadDates(){
+        $.post('/date', {}, function(response) {
+            // console.log(response);
+            if(response.error){
+            	throw response.error	
+            }else{
+				console.log(response.dateRange);
+				generateGui('dates', response.dateRange);
+            }
+        });		
+	}	
+
 	// Generating the menu based on the data loaded from the server
 	function generateGui(name, options){
 		
@@ -37,14 +50,48 @@ app.init = function() {
 		var title = $('<h2>'+name+'</h2>')
 		$(searchOptions).append(title);
 
+		// Letters
+		if(name == 'letters'){
+			var column;
+			options.forEach(function(item, index){
+				// console.log(item);
+				var div, checkbox, label, span;
+	      		div = $('<div class="checkbox-container"></div>');
+				checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
+				label = $('<label for="'+item+'"></label>');
+				span = $('<span>'+item+'</span>');
+				$(div).append(checkbox).append(label).append(span);
+				if(index % 9 == 0){
+					column = $('<div class="column"></div>');
+					$(searchOptions).append(column);
+				}
+				$(column).append(div);				
+			});
+
+		// Calendar
+		}else if(name == 'dates'){
+			options.forEach(function(item, index, list){
+				var div, span, input, inputName, inputValue;
+				if(index == 0){
+					inputName = 'from';
+				}else{
+					inputName = 'to';
+				}
+				div = $('<div class="date-container"></div>');
+				span = $('<span>'+inputName.capitalizeFirstLetter()+'</span><br/>')
+				input = $('<input type="date" name="'+inputName+'" min="'+formatDateYYYYMMDD(list[0])+'" max="'+formatDateYYYYMMDD(list[1])+'">');
+				$(input).val(formatDateYYYYMMDD(item));
+				$(div).append(span).append(input);
+				$(searchOptions).append(div);
+			});
+			
+
 		// Countries and Services
-		if(name != 'letters'){
+		}else{
 			options.forEach(function(item){
 				// console.log(item);
 				var div, checkbox, label, span;
-	      		
 	      		div = $('<div class="checkbox-container"></div>');
-
 	      		if(name == 'services'){
 	      			checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.site+'" id="'+item.site+'">');	
 					label = $('<label for="'+item.site+'"></label>');
@@ -54,29 +101,9 @@ app.init = function() {
 					label = $('<label for="'+item.domain+'"></label>');
 					span = $('<span>'+item.country_name+'</span>');					
 	      		}
-
 				$(div).append(checkbox).append(label).append(span);
 				$(searchOptions).append(div);
-			});
-
-		// Letters
-		}else{
-			var column;
-
-			options.forEach(function(item, index){
-				// console.log(item);
-	      		var div = $('<div class="checkbox-container"></div>');
-				var checkbox = $('<input type="checkbox" name="'+name+'" value="'+item+'" id="'+item+'">');
-				var label = $('<label for="'+item+'"></label>');
-				var span = $('<span>'+item+'</span>');
-				$(div).append(checkbox).append(label).append(span);
-				if(index % 9 == 0){
-					column = $('<div class="column"></div>');
-					$(searchOptions).append(column);
-				}
-				$(column).append(div);				
-			});
-
+			});			
 		}
 
 		$('#search-div').append(searchOptions);
@@ -129,17 +156,19 @@ app.init = function() {
 	// Show/hide sidebar
 	function moveMenu(){
 		if($('#search-div').offset().left < 0){
-			$('#search-div').animate({left: 0}, 500);	
+			$('#search-div').animate({left: 0}, 300);	
 		}else{
-			$('#search-div').animate({left: -$('#search-div').outerWidth()}, 500);			
+			$('#search-div').animate({left: -$('#search-div').outerWidth()}, 300);			
 		}
 	}
 
 	// Show loading
 	function callLoader(){
 		$('#results-container').empty();
+		var loaderContainer = $('<div id="loader-container"></div>')
 		var loader = $('<span class="loader"></span>');
-		$('#results-container').append(loader);
+		$(loaderContainer).append(loader);
+		$('body').append(loaderContainer)
 	}
 
 	// Show search results
@@ -147,11 +176,12 @@ app.init = function() {
 		console.log('Called printResults.')
 		console.log(data);
 		$('#results-container').empty();
+		$('#loader-container').remove();
 		for(var i = 0; i < data.length; i++){
 			var newDiv = $('<div class="results"></div>');
 
 			var letter = $('<h2>' + data[i].letter + '</h2>');
-			var description = $('<p>' + formatDate(data[i].date) + '<br>' +
+			var description = $('<p>' + formatDateMMDDYYY(data[i].date) + '<br>' +
 						  				data[i].domain + '<br>' +
 						  				data[i].language + '<br>' +
 										data[i].service + '<br>' + '</p>');
@@ -169,13 +199,28 @@ app.init = function() {
 	}
 
 	// Formats UTC date to MM/DD/YYYY
-	function formatDate(date){
+	function formatDateMMDDYYY(date){
 		var newDate = new Date(date);
 		var monthString = newDate.getMonth() + 1;
 		if (monthString < 10) monthString = '0' + monthString;
 		var dateString = newDate.getDate();
 		var yearString = newDate.getFullYear();
 		return monthString + '/' + dateString + '/' + yearString;
+	}
+
+	// Formats UTC date to YYYY-MM-DD (for input[type=date])
+	function formatDateYYYYMMDD(date){
+		var newDate = new Date(date);
+		var monthString = newDate.getMonth() + 1;
+		if (monthString < 10) monthString = '0' + monthString;
+		var dateString = newDate.getDate();
+		var yearString = newDate.getFullYear();
+		return yearString + '-' + monthString + '-' + dateString;
+	}	
+
+	// Capitalize first letter of any String
+	String.prototype.capitalizeFirstLetter = function() {
+    	return this.charAt(0).toUpperCase() + this.slice(1);
 	}
 }
 
