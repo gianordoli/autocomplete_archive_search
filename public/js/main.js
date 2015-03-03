@@ -137,11 +137,25 @@ app.init = function() {
 		});
 
 	    $('#search-bt').off('click').on('click', function() {
-	    	if(validateSearch){
-		        moveMenu();
-		        callLoader();
-		        queryDB();
-	    	}
+	    	validateSearch(function(error, response){
+	    		if(!error){
+			        moveMenu();
+			        callLoader();
+			        queryDB();	    			
+	    		}else{
+	    			console.log(response);
+	    			var msg = 'Choose at least one ';
+	    			response.forEach(function(value, index, list){
+	    				if(index > 0){
+							msg += ', ';
+							if(index == list.length - 1) msg += 'and ';
+	    				}
+	    				msg += value;
+	    			});
+	    			msg += '.';
+	    			console.log(msg);
+	    		}
+	    	});
 	    });	
 
 		$('.selection-buttons').off('click').on('click', function() {
@@ -154,9 +168,31 @@ app.init = function() {
 		});
 	}
 
-	function validateForm(){
-
-		return true;
+	function validateSearch(callback){
+		var inputs = $('#search-div').find('input[type=checkbox]');
+		console.log(inputs.length);
+		var unchecked = [];
+		$(inputs).each(function(index, obj){
+			if(!$(obj).prop('checked')){
+				// console.log(obj);
+				var objName = $(obj).attr('name');
+				if(!_.contains(unchecked, objName)){
+					unchecked.push(objName);
+				}
+			}
+		});
+		// console.log(unchecked);
+		if(unchecked.length == 0){
+			callback(false);
+		}else{
+			unchecked = _.map(unchecked, function(value, index){
+				var singular = value.substring(0, value.length - 1);
+				if(singular == 'countrie') singular = 'country';
+				return singular;
+			});
+			console.log(unchecked);
+			callback(true, unchecked);
+		}
 	}
 
 	function queryDB(){
