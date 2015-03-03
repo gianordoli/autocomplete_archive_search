@@ -137,9 +137,11 @@ app.init = function() {
 		});
 
 	    $('#search-bt').off('click').on('click', function() {
-	        moveMenu();
-	        callLoader();
-	        queryDB();
+	    	if(validateSearch){
+		        moveMenu();
+		        callLoader();
+		        queryDB();
+	    	}
 	    });	
 
 		$('.selection-buttons').off('click').on('click', function() {
@@ -150,6 +152,11 @@ app.init = function() {
 				$(inputs).prop('checked', false);
 			}
 		});
+	}
+
+	function validateForm(){
+
+		return true;
 	}
 
 	function queryDB(){
