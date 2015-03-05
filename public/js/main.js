@@ -138,6 +138,7 @@ app.init = function() {
 
 	    $('#search-bt').off('click').on('click', function() {
 	    	validateSearch(function(error, response){
+	    		console.log(error);
 	    		if(!error){
 			        moveMenu();
 			        callLoader();
@@ -169,18 +170,33 @@ app.init = function() {
 	}
 
 	function validateSearch(callback){
-		var inputs = $('#search-div').find('input[type=checkbox]');
-		console.log(inputs.length);
+		var divs = $('#search-div .search-options');
+		// console.log(divs);
+		
 		var unchecked = [];
-		$(inputs).each(function(index, obj){
-			if(!$(obj).prop('checked')){
-				// console.log(obj);
-				var objName = $(obj).attr('name');
-				if(!_.contains(unchecked, objName)){
-					unchecked.push(objName);
+
+		$(divs).each(function(index, obj){
+			var isSelected = false;
+			var name = "";
+
+			var inputs = $(obj).find('input[type=checkbox]');
+			// console.log(inputs.length);
+
+			// Removing date inputs
+			if(inputs.length > 0){
+				$(inputs).each(function(index, obj){
+					name = $(obj).attr('name');
+					if($(obj).prop('checked')){
+						isSelected = true;
+					}
+				});
+
+				if(!isSelected){
+					unchecked.push(name);
 				}
 			}
-		});
+		});		
+
 		// console.log(unchecked);
 		if(unchecked.length == 0){
 			callback(false);
