@@ -267,6 +267,11 @@ app.init = function() {
 	function printResults(data){
 		console.log('Called printResults.')
 		// console.log(data);
+
+		data = _.sortBy(data, function(item, index, list){
+			return item.language;
+		});
+
 		$('#results-container').empty();
 		$('#loader-container').remove();
 		for(var i = 0; i < data.length; i++){
@@ -278,10 +283,12 @@ app.init = function() {
 			});
 			country = country['country_name'];
 			// console.log(country);
-			var details = $('<p class="details">' + formatDateMMDDYYY(data[i].date) + '<br>' +
-						  				country + '<br>' +
-						  				// data[i].language + '<br>' +
-										data[i].service + '<br>' + '</p>');
+			var details = $('<ul class="details">' +
+								'<li>' + formatDateMMDDYYY(data[i].date) + '</li>' +
+						  		'<li>' + country + '</li>' +
+						  		'<li>' + data[i].language + '</li>' +
+								'<li>' + data[i].service + '</li>' +
+							'</ul>');
 			var predictions = $('<ul></ul>');
 			for(var j = 0; j < data[i].results.length; j++){
 				var prediction = $('<li>' + data[i].results[j] + '</li>');
