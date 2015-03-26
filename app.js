@@ -103,23 +103,12 @@ function getDateRangeDB(callback){
 		console.log('Connecting to DB...');
 		if(err) throw err;
 		console.log('Connected.');
-		var collection = db.collection('records');
+		var collection = db.collection('date_range');
 
-		var min = (new Date()).getTime();
-		var max = 0;
 		collection.find({}).toArray(function(err, results) {
-			// console.dir(results);
-			results.forEach(function(item, index, array){
-				if(item.date.getTime() > max) max = item.date;
-				if(item.date.getTime() < min) min = item.date;
-			});
-			console.log('min: ' + min);
-			console.log('max: ' + max);
-			min = Date.parse(min);
-			max = Date.parse(max);
-			console.log('min: ' + min);
-			console.log('max: ' + max);
-			callback([min, max]);
+			console.dir(results);
+			// console.log(results[0].min);
+			callback([results[0].min, results[0].max]);
 			db.close();	// Let's close the db 
 		});			
 	});	
