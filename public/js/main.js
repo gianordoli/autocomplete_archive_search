@@ -6,9 +6,17 @@ app.init = function() {
 
 	// GLOBALS
 	var countries = [];
+	var sites = {
+		youtube: { client: 'youtube', ds: 'yt', address: 'https://www.youtube.com/results?search_query=X' },
+		books: { client: 'books', ds: 'bo', address: 'https://www.google.com/search?q=X&tbm=bks' },
+		products: { client: 'products-cc', ds: 'sh', address: 'https://www.google.com/#q=X&tbm=shop' },
+		news: { client: 'news-cc', ds: 'n', address: 'https://www.google.com/#q=X&tbm=nws' },
+		images: { client: 'img', ds: 'i', address: 'https://www.google.com/search?site=imghp&tbm=isch&q=X' },
+		web: { client: 'psy', ds: '', address: 'https://www.google.com/#q=X' },
+		recipes: { client: 'psy', ds: 'r', address: 'https://www.google.com/search?tbs=rcp&q=X'  }
+	};
 
 	loadGuiData();
-	loadDates();
 
 	/*------------------ FUNCTIONS ------------------*/	
 
@@ -21,31 +29,20 @@ app.init = function() {
             }else{
 				// console.log(response.services);
 				// console.log(response.countries);
+				// console.log('dates:' + response.dateRange);				
 				var letters = [];
 				for(var i = 65; i <= 90; i++){
 					letters.push(String.fromCharCode(i));
 				}
-				generateGui('letters', letters);
-				generateGui('services', response.services);
-				generateGui('countries', response.countries);
+				generateGui('dates', response.dateRange, attachEvents);
+				generateGui('letters', letters, attachEvents);
+				generateGui('services', response.services, attachEvents);
+				generateGui('countries', response.countries, attachEvents);
 
 				countries = response.countries;	// store this one as global
             }
         });		
 	}
-
-	// Loading the dates to build the calendar
-	function loadDates(){
-        $.post('/date', {}, function(response) {
-            // console.log(response);
-            if(response.error){
-            	throw response.error	
-            }else{
-				console.log('dates:' + response.dateRange);
-				generateGui('dates', response.dateRange, attachEvents);
-            }
-        });		
-	}	
 
 	// Generating the menu based on the data loaded from the server
 	function generateGui(name, options, callback){
@@ -169,13 +166,14 @@ app.init = function() {
 			}
 		});
 
-		$('input[name=services]').on('change', function(){
+		// Reload list of languages based on selected service
+		$('input[name=services]').off('change').on('change', function(){
 			// console.log($(this).val());
 			$.post('/filter', {
 				service: $(this).val()
 			}, function(response) {
 				console.log(response);
-				generateGui('countries', response.countries);
+				generateGui('countries', response.countries, attachEvents);
 			});			
 		});
 	}
@@ -300,9 +298,19 @@ app.init = function() {
 						  		'<li>' + data[i].language + '</li>' +
 								'<li>' + data[i].service + '</li>' +
 							'</ul>');
+
 			var predictions = $('<ul></ul>');
 			for(var j = 0; j < data[i].results.length; j++){
-				var prediction = $('<li>' + data[i].results[j] + '</li>');
+
+        		var query = data[i].results[j];
+        		while(query.indexOf(' ') > -1){
+        			query = query.replace(' ', '+') 
+        		}
+        		var link = sites[data[i].service].address;
+        		link = link.replace('X', query);
+        		link += "&hl=" + data[i].language;
+
+				var prediction = $('<li><a href ="'+link+'" target="_blank">' + data[i].results[j] + '</a></li>');
 				predictions.append(prediction);
 			}
 

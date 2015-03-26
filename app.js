@@ -40,18 +40,13 @@ app.post('/start', function(request, response) {
 	// console.log(loadedCountries);
 	var loadedServices = jf.readFileSync('data/services.json');
 	// console.log(loadedServices);
-	response.json({
-		countries: loadedCountries,
-		services: loadedServices
-	});
-});
 
-app.post('/date', function(request, response) {
 	getDateRangeDB(function(range){
 		// console.log('Called callback.');
 		// console.log(range);
 		response.json({
-			error: null,
+			countries: loadedCountries,
+			services: loadedServices,
 			dateRange: range
 		});		
 	});
