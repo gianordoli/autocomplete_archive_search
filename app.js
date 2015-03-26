@@ -36,13 +36,10 @@ app.use('/', express.static(__dirname + '/public'));
 app.post('/start', function(request, response) {
 
 	// console.log(request.body);
-	var loadedCountries = jf.readFileSync('data/countries_domains_languages.json');
-	loadedCountries = _.filter(loadedCountries, function(obj){
-		return obj.language_a_script == 'latin';
-	});
+	var loadedCountries = jf.readFileSync('data/languages.json');
 	// console.log(loadedCountries);
 	var loadedServices = jf.readFileSync('data/services.json');
-	
+	// console.log(loadedServices);
 	response.json({
 		countries: loadedCountries,
 		services: loadedServices
@@ -60,7 +57,20 @@ app.post('/date', function(request, response) {
 	});
 });
 
-// Create a project
+// Filter languages
+app.post('/filter', function(request, response) {
+	console.log(request.body);
+	var loadedCountries = jf.readFileSync('data/languages.json');
+	loadedCountries = _.filter(loadedCountries, function(item, index, list){
+		return item[request.body.service] == 1;
+	});
+	console.log(loadedCountries);
+	response.json({
+		countries: loadedCountries
+	});
+});
+
+// Search
 app.post('/search', function(request, response) {
 	console.log('Route: /search');
     console.log(request.body);
@@ -163,12 +173,6 @@ function searchMongoDB(query, callback){
 		});		
 
 	});
-}
-
-function getParams(obj, param, query){
-	// console.log(query[param+'s[]']);
-
-	return obj;
 }
 
 

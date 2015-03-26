@@ -50,7 +50,8 @@ app.init = function() {
 	// Generating the menu based on the data loaded from the server
 	function generateGui(name, options, callback){
 		
-		var searchOptions = $('<div class="search-options"></div>');
+		$('div[name='+name+']').remove();
+		var searchOptions = $('<div name="'+name+'" class="search-options"></div>');
 		var title = $('<h2>'+name+'</h2>');
 		$(searchOptions).append(title);
 
@@ -92,7 +93,7 @@ app.init = function() {
 		      		}else if(name == 'countries'){
 						checkbox = $('<input type="checkbox" name="'+name+'" value="'+item.domain+'" id="'+item.domain+'">');	
 						label = $('<label for="'+item.domain+'"></label>');
-						span = $('<span>'+item.country_name+'</span>');					
+						span = $('<span>'+item.language_a_name+'</span>');					
 		      		}
 					$(div).append(checkbox).append(label).append(span);
 					$(searchOptions).append(div);
@@ -166,6 +167,16 @@ app.init = function() {
 			}else{
 				$(inputs).prop('checked', false);
 			}
+		});
+
+		$('input[name=services]').on('change', function(){
+			// console.log($(this).val());
+			$.post('/filter', {
+				service: $(this).val()
+			}, function(response) {
+				console.log(response);
+				generateGui('countries', response.countries);
+			});			
 		});
 	}
 
