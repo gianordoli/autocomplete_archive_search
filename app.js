@@ -57,14 +57,26 @@ app.post('/start', function(request, response) {
 
 // Filter languages
 app.post('/filter', function(request, response) {
-	console.log(request.body);
-	var loadedCountries = jf.readFileSync('data/languages.json');
-	loadedCountries = _.filter(loadedCountries, function(item, index, list){
-		return item[request.body.service] == 1;
+	console.log(request.body['service[]']);
+	var services = request.body['service[]'];
+	var minService;
+	if(!_.isArray(services)){
+		minService = services;
+	}else{
+		var i = loadedServices.length - 1;
+		while(!_.contains(services, loadedServices[i].site) && i > 0){
+			console.log(loadedServices[i].site);
+			i--;
+		}
+		minService = loadedServices[i].site;
+	}
+	console.log(minService);
+	filteredCountries = _.filter(loadedCountries, function(item, index, list){
+		return item[minService] == 1;
 	});
-	console.log(loadedCountries);
+	// console.log(filteredCountries);
 	response.json({
-		countries: loadedCountries
+		countries: filteredCountries
 	});
 });
 

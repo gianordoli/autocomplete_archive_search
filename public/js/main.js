@@ -192,12 +192,16 @@ app.init = function() {
 		// Reload list of languages based on selected service
 		$('input[name=services]').off('change').on('change', function(){
 			// console.log($(this).val());
-			$.post('/filter', {
-				service: $(this).val()
-			}, function(response) {
-				console.log(response);
-				generateGui('countries', response.countries, attachEvents);
-			});			
+			var services = getSelected('services');
+			console.log(services);
+			if(services.length > 0){
+				$.post('/filter', {
+					'service[]': services
+				}, function(response) {
+					console.log(response);
+					generateGui('countries', response.countries, attachEvents);
+				});			
+			}
 		});
 	}
 
