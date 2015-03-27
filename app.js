@@ -119,6 +119,7 @@ app.post('/search', function(request, response) {
 
 function getImage(record, index, query){
 	console.log(record);
+
 	client.search(query, function(err, images){
 	    // return images[0].url;
 	    if(!err){
@@ -141,14 +142,25 @@ function getImage(record, index, query){
 		    }
 		    console.log(query);
 
+		    // Extracting the date
+			var recordDate = new Date(record.date);
+			var month = recordDate.getMonth() + 1;
+			if(month < 10) month = '0' + month;
+			var date = recordDate.getDate();
+			var year = recordDate.getFullYear();
+			var dateString = year + '_' + month + '_' + date;
+
+			// Concatenating filename
 		    var filename = record.language + '_' +
 		    			   record.letter + '_' +
 		    			   index + '_' +
-		    			   query + extension;
+		    			   query + '_' +
+		    			   dateString +
+		    			   extension;
 		    // console.log(filename);
 
 			download(url, filename, function(){
-			  // console.log('done');
+				console.log('done');
 			});
 	    }
 	});
