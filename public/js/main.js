@@ -157,6 +157,29 @@ app.init = function() {
 	    	});
 	    });	
 
+	    $('#save-img-bt').off('click').on('click', function() {
+	    	validateSearch(function(error, response){
+	    		console.log(error);
+	    		if(!error){
+			        moveMenu();
+			        callLoader();
+			        queryDB(true);
+	    		}else{
+	    			console.log(response);
+	    			var msg = 'Choose at least one ';
+	    			response.forEach(function(value, index, list){
+	    				if(index > 0){
+							msg += ', ';
+							if(index == list.length - 1) msg += 'and ';
+	    				}
+	    				msg += value;
+	    			});
+	    			msg += '.';
+	    			console.log(msg);
+	    		}
+	    	});
+	    });		    
+
 		$('.selection-buttons').off('click').on('click', function() {
 			var inputs = $(this).parent().find('input');
 			if($(this).attr('name') == 'select'){
@@ -220,7 +243,8 @@ app.init = function() {
 		}
 	}
 
-	function queryDB(){
+	function queryDB(param){
+
 		var from = convertToServerTimeZone($('input[type=date][name=from]').val());
 		var to = convertToServerTimeZone($('input[type=date][name=to]').val());
 		console.log('from: ' + from);
@@ -232,8 +256,10 @@ app.init = function() {
             'letter[]': getSelected('letters'),
             'service[]': getSelected('services'),
             'domain[]': getSelected('countries'),
-            'date[]': [from, to]
+            'date[]': [from, to],
+            'save': param
         }
+
         // Ajax call
         $.post('/search', data,
         function(response) {

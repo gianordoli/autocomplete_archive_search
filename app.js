@@ -3,7 +3,10 @@ var		express = require('express'),
 	 bodyParser = require('body-parser')
 	MongoClient = require('mongodb').MongoClient,
 			 jf = require('jsonfile'),
-			  _ = require('underscore');
+			  _ = require('underscore'),
+	     client = require('google-images'),
+	    request = require('request')
+	    	 fs = require('fs');
 
 var app = express();
 
@@ -30,16 +33,16 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', express.static(__dirname + '/public'));
+var loadedCountries = jf.readFileSync('data/languages.json');
+// console.log(loadedCountries);
+var loadedServices = jf.readFileSync('data/services.json');
+// console.log(loadedServices);
 
 
 /*------------------- ROUTERS -------------------*/
 app.post('/start', function(request, response) {
 
 	// console.log(request.body);
-	var loadedCountries = jf.readFileSync('data/languages.json');
-	// console.log(loadedCountries);
-	var loadedServices = jf.readFileSync('data/services.json');
-	// console.log(loadedServices);
 
 	getDateRangeDB(function(range){
 		// console.log('Called callback.');
@@ -73,6 +76,7 @@ app.post('/search', function(request, response) {
     console.log(request.body['service[]']);
     console.log(request.body['domain[]']);
     console.log(request.body['date[]']);
+    console.log(request.body['save']);
 	// console.log(new Date(parseInt(request.body['date[]'][0])).toUTCString());
 
     // Change letters to lowercase
@@ -88,16 +92,62 @@ app.post('/search', function(request, response) {
 	});	
 	console.log(request.body['date[]']);
 
-    searchMongoDB(request.body, function(results){
+    searchMongoDB(request.body, function(records){
     	console.log('Called callback.');
-    	console.log(results);
-	    response.json({
-	    	error: null,
-	        data: results
-	    });    	
+    	// console.log(records);
+
+    	if(records.length > 0){
+	    	if(request.body['save']){
+		    	for(var i = 0; i < records.length; i++){
+		    		// console.log(records[i].results);
+		    		for(var j = 0; j < records[i].results.length; j++){
+		    			getImage(records[i], j, records[i].results[j]);
+		    		}
+		    	}
+	    	}
+		    response.json({
+		    	error: null,
+		        data: records
+		    });    	    		
+		}else{
+		    response.json({
+		    	error: true
+		    });			
+		}
     });
 });
 
+function getImage(record, index, query){
+	console.log(record);
+	client.search(query, function(err, images){
+	    // return images[0].url;
+	    if(!err){
+
+		    // console.log(images[0].url);	
+		    var url = images[0].url;
+		    var extension = url.substring(url.lastIndexOf('.'));
+		    var filename = record.language + '_' +
+		    			   record.letter + '_' +
+		    			   index + '_' +
+		    			   query + extension;
+		    console.log(url);
+		    console.log(filename);
+
+			download(url, filename, function(){
+			  console.log('done');
+			});
+	    }
+	});
+}
+
+var download = function(uri, filename, callback){
+  request.head(uri, function(err, res, body){
+    console.log('content-type:', res.headers['content-type']);
+    console.log('content-length:', res.headers['content-length']);
+    var path = '../images/';
+    request(uri).pipe(fs.createWriteStream(path + filename)).on('close', callback);
+  });
+};
 
 /*------------------ FUNCTIONS ------------------*/
 
