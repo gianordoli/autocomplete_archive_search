@@ -122,20 +122,25 @@ function getImage(record, index, query){
 	client.search(query, function(err, images){
 	    // return images[0].url;
 	    if(!err){
+	
+		    var url = images[0].unescapedUrl;
+		    console.log(url);
 
-		    // console.log(images[0].url);	
-		    var originalUrl = images[0].url;
-		    originalUrl = originalUrl.toLowerCase();
+		    // Grabbing the extension
 		    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
 		    var i = 0;
-		    while(originalUrl.indexOf(extensions[i]) < 0){
+		    while(url.toLowerCase().indexOf(extensions[i]) < 0){
 		    	i ++;
 		    }
 		    var extension = extensions[i];
-		    var url = originalUrl.substring(0, originalUrl.indexOf(extension) + extension.length);
-		    // console.log(originalUrl);
-		    // console.log(url);
-		    // console.log(extension);
+		    console.log(extension);
+
+		    // Replacing the spaces to save the file
+		    while(query.indexOf(' ') > -1){
+		    	query = query.replace(' ', '_');
+		    }
+		    console.log(query);
+
 		    var filename = record.language + '_' +
 		    			   record.letter + '_' +
 		    			   index + '_' +
@@ -143,7 +148,7 @@ function getImage(record, index, query){
 		    // console.log(filename);
 
 			download(url, filename, function(){
-			  console.log('done');
+			  // console.log('done');
 			});
 	    }
 	});
