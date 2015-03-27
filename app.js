@@ -124,14 +124,23 @@ function getImage(record, index, query){
 	    if(!err){
 
 		    // console.log(images[0].url);	
-		    var url = images[0].url;
-		    var extension = url.substring(url.lastIndexOf('.'));
+		    var originalUrl = images[0].url;
+		    originalUrl = originalUrl.toLowerCase();
+		    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
+		    var i = 0;
+		    while(originalUrl.indexOf(extensions[i]) < 0){
+		    	i ++;
+		    }
+		    var extension = extensions[i];
+		    var url = originalUrl.substring(0, originalUrl.indexOf(extension) + extension.length);
+		    // console.log(originalUrl);
+		    // console.log(url);
+		    // console.log(extension);
 		    var filename = record.language + '_' +
 		    			   record.letter + '_' +
 		    			   index + '_' +
 		    			   query + extension;
-		    console.log(url);
-		    console.log(filename);
+		    // console.log(filename);
 
 			download(url, filename, function(){
 			  console.log('done');
