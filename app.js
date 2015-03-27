@@ -1,12 +1,12 @@
 /*-------------------- MODULES --------------------*/
-var		express = require('express'),
-	 bodyParser = require('body-parser')
-	MongoClient = require('mongodb').MongoClient,
-			 jf = require('jsonfile'),
-			  _ = require('underscore'),
-	     client = require('google-images'),
-	    request = require('request')
-	    	 fs = require('fs');
+var		express = require('express'),			  // Run server
+	 bodyParser = require('body-parser'),		  // Parse requests
+	MongoClient = require('mongodb').MongoClient, // Access database
+			 jf = require('jsonfile'),			  // Read json files
+			  _ = require('underscore'),		  // Filtering/sorting
+	     client = require('google-images'),		  // Get list of Google Images
+	    request = require('request')			  // Manage image requests
+	    	 fs = require('fs');				  // Save image files
 
 var app = express();
 
