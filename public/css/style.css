@@ -78,6 +78,7 @@ body{
 	background-color: white;
 	outline: none;	
 	padding: 4px 6px;
+	margin-bottom: 5px;
 }
 
 #search-div input{

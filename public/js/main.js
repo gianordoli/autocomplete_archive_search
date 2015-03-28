@@ -134,7 +134,7 @@ app.init = function() {
 			moveMenu();
 		});
 
-	    $('#search-bt, #save-img-bt, #save-json-bt').off('click').on('click', function() {
+	    $('#search-bt, #save-img-bt, #save-db-bt').off('click').on('click', function() {
 	    	var id = $(this).attr('id');
 	    	var mode = id.substring(id.indexOf('-') + 1, id.lastIndexOf('-'));
 	    	console.log(mode);

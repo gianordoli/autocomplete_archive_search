@@ -106,7 +106,7 @@ app.post('/search', function(request, response) {
 
     searchMongoDB(request.body, function(records){
     	console.log('Called callback.');
-    	// console.log(records);
+    	console.log(records.length);
 
     	if(records.length > 0){
 	    	if(request.body['mode'] != undefined){
@@ -147,45 +147,72 @@ function getImage(record, index, query, mode){
 			var year = recordDate.getFullYear();
 			var dateString = year + '_' + month + '_' + date;
 
-			if(mode == 'json'){
+			if(mode == 'db'){
 				console.log('Saving json');
-				// SAVE JSON
-				// var obj = {
-				// 	language_code: record.language
-				// 	query: query
-				// }	
+
+				var i = _.findIndex(loadedCountries, function(item){
+					return item.language_a_code == record.language;
+				});
+				var languageName = loadedCountries[i].language_a_name;
+				
+				var obj = {
+				    language_code: record.language,
+				    language_name: languageName,
+    				letter:  record.letter,
+    				date: record.date,
+    				query: query,
+    				url: images[0].unescapedUrl
+    			}
+
+				MongoClient.connect('mongodb://127.0.0.1:27017/autocomplete', function(err, db) {
+					console.log('Connecting to DB...');
+					if(err) throw err;
+					console.log('Connected.');
+					var collection = db.collection('images');
+					var index = 0;
+
+					collection.insert(obj, function(err, docs) {
+						if(err){
+							throw err;
+						}else{
+							console.log('Obj succesfully saved to DB.');	
+							db.close();				
+						}
+					});
+
+				});    			
 
 			}else if(mode == 'img'){
 				console.log('Saving image');
 
-				// // SAVING IMAGE
-			 //    // Grabbing the extension
-			 //    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
-			 //    var i = 0;
-			 //    while(url.toLowerCase().indexOf(extensions[i]) < 0){
-			 //    	i ++;
-			 //    }
-			 //    var extension = extensions[i];
-			 //    console.log(extension);
+				// SAVING IMAGE
+			    // Grabbing the extension
+			    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
+			    var i = 0;
+			    while(url.toLowerCase().indexOf(extensions[i]) < 0){
+			    	i ++;
+			    }
+			    var extension = extensions[i];
+			    console.log(extension);
 
-			 //    // Replacing the spaces to save the file
-			 //    while(query.indexOf(' ') > -1){
-			 //    	query = query.replace(' ', '_');
-			 //    }
-			 //    console.log(query);
+			    // Replacing the spaces to save the file
+			    while(query.indexOf(' ') > -1){
+			    	query = query.replace(' ', '_');
+			    }
+			    console.log(query);
 
-				// // Concatenating filename
-			 //    var filename = record.language + '_' +
-			 //    			   record.letter + '_' +
-			 //    			   index + '_' +
-			 //    			   query + '_' +
-			 //    			   dateString +
-			 //    			   extension;
-			 //    // console.log(filename);	    
+				// Concatenating filename
+			    var filename = record.language + '_' +
+			    			   record.letter + '_' +
+			    			   index + '_' +
+			    			   query + '_' +
+			    			   dateString +
+			    			   extension;
+			    // console.log(filename);	    
 
-				// download(url, filename, function(){
-				// 	console.log('done');
-				// });
+				download(url, filename, function(){
+					console.log('done');
+				});
 			}
 	    }
 	});
