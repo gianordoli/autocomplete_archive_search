@@ -88,7 +88,7 @@ app.post('/search', function(request, response) {
     console.log(request.body['service[]']);
     console.log(request.body['domain[]']);
     console.log(request.body['date[]']);
-    console.log(request.body['save']);
+    console.log(request.body['mode']);
 	// console.log(new Date(parseInt(request.body['date[]'][0])).toUTCString());
 
     // Change letters to lowercase
@@ -109,11 +109,11 @@ app.post('/search', function(request, response) {
     	// console.log(records);
 
     	if(records.length > 0){
-	    	if(request.body['save']){
+	    	if(request.body['mode'] != undefined){
 		    	for(var i = 0; i < records.length; i++){
 		    		// console.log(records[i].results);
 		    		for(var j = 0; j < records[i].results.length; j++){
-		    			getImage(records[i], j, records[i].results[j]);
+		    			getImage(records[i], j, records[i].results[j], request.body['mode']);
 		    		}
 		    	}
 	    	}
@@ -129,7 +129,7 @@ app.post('/search', function(request, response) {
     });
 });
 
-function getImage(record, index, query){
+function getImage(record, index, query, mode){
 	console.log(record);
 
 	client.search(query, function(err, images){
@@ -139,21 +139,6 @@ function getImage(record, index, query){
 		    var url = images[0].unescapedUrl;
 		    console.log(url);
 
-		    // Grabbing the extension
-		    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
-		    var i = 0;
-		    while(url.toLowerCase().indexOf(extensions[i]) < 0){
-		    	i ++;
-		    }
-		    var extension = extensions[i];
-		    console.log(extension);
-
-		    // Replacing the spaces to save the file
-		    while(query.indexOf(' ') > -1){
-		    	query = query.replace(' ', '_');
-		    }
-		    console.log(query);
-
 		    // Extracting the date
 			var recordDate = new Date(record.date);
 			var month = recordDate.getMonth() + 1;
@@ -162,18 +147,46 @@ function getImage(record, index, query){
 			var year = recordDate.getFullYear();
 			var dateString = year + '_' + month + '_' + date;
 
-			// Concatenating filename
-		    var filename = record.language + '_' +
-		    			   record.letter + '_' +
-		    			   index + '_' +
-		    			   query + '_' +
-		    			   dateString +
-		    			   extension;
-		    // console.log(filename);
+			if(mode == 'json'){
+				console.log('Saving json');
+				// SAVE JSON
+				// var obj = {
+				// 	language_code: record.language
+				// 	query: query
+				// }	
 
-			download(url, filename, function(){
-				console.log('done');
-			});
+			}else if(mode == 'img'){
+				console.log('Saving image');
+
+				// // SAVING IMAGE
+			 //    // Grabbing the extension
+			 //    var extensions = ['.png', '.gif', '.jpg', '.jpeg', '.tif'];
+			 //    var i = 0;
+			 //    while(url.toLowerCase().indexOf(extensions[i]) < 0){
+			 //    	i ++;
+			 //    }
+			 //    var extension = extensions[i];
+			 //    console.log(extension);
+
+			 //    // Replacing the spaces to save the file
+			 //    while(query.indexOf(' ') > -1){
+			 //    	query = query.replace(' ', '_');
+			 //    }
+			 //    console.log(query);
+
+				// // Concatenating filename
+			 //    var filename = record.language + '_' +
+			 //    			   record.letter + '_' +
+			 //    			   index + '_' +
+			 //    			   query + '_' +
+			 //    			   dateString +
+			 //    			   extension;
+			 //    // console.log(filename);	    
+
+				// download(url, filename, function(){
+				// 	console.log('done');
+				// });
+			}
 	    }
 	});
 }

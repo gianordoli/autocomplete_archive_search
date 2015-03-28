@@ -134,48 +134,20 @@ app.init = function() {
 			moveMenu();
 		});
 
-	    $('#search-bt').off('click').on('click', function() {
+	    $('#search-bt, #save-img-bt, #save-json-bt').off('click').on('click', function() {
+	    	var id = $(this).attr('id');
+	    	var mode = id.substring(id.indexOf('-') + 1, id.lastIndexOf('-'));
+	    	console.log(mode);
+	    	if(mode == '-') mode = undefined;
 	    	validateSearch(function(error, response){
 	    		console.log(error);
 	    		if(!error){
 			        moveMenu();
 			        callLoader();
-			        queryDB();	    			
+			        queryDB(mode);
 	    		}else{
 	    			console.log(response);
-	    			var msg = 'Choose at least one ';
-	    			response.forEach(function(value, index, list){
-	    				if(index > 0){
-							msg += ', ';
-							if(index == list.length - 1) msg += 'and ';
-	    				}
-	    				msg += value;
-	    			});
-	    			msg += '.';
-	    			console.log(msg);
-	    		}
-	    	});
-	    });	
-
-	    $('#save-img-bt').off('click').on('click', function() {
-	    	validateSearch(function(error, response){
-	    		console.log(error);
-	    		if(!error){
-			        moveMenu();
-			        callLoader();
-			        queryDB(true);
-	    		}else{
-	    			console.log(response);
-	    			var msg = 'Choose at least one ';
-	    			response.forEach(function(value, index, list){
-	    				if(index > 0){
-							msg += ', ';
-							if(index == list.length - 1) msg += 'and ';
-	    				}
-	    				msg += value;
-	    			});
-	    			msg += '.';
-	    			console.log(msg);
+	    			// displayAlert(response);
 	    		}
 	    	});
 	    });		    
@@ -203,6 +175,19 @@ app.init = function() {
 				});			
 			}
 		});
+	}
+
+	function displayAlert(response){
+		var msg = 'Choose at least one ';
+		response.forEach(function(value, index, list){
+			if(index > 0){
+				msg += ', ';
+				if(index == list.length - 1) msg += 'and ';
+			}
+			msg += value;
+		});
+		msg += '.';
+		alert(msg);
 	}
 
 	function validateSearch(callback){
@@ -247,7 +232,7 @@ app.init = function() {
 		}
 	}
 
-	function queryDB(param){
+	function queryDB(mode){
 
 		var from = convertToServerTimeZone($('input[type=date][name=from]').val());
 		var to = convertToServerTimeZone($('input[type=date][name=to]').val());
@@ -261,7 +246,7 @@ app.init = function() {
             'service[]': getSelected('services'),
             'domain[]': getSelected('countries'),
             'date[]': [from, to],
-            'save': param
+            'mode': mode
         }
 
         // Ajax call
